@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
+  MapPin,
   Send,
   Sparkles,
   TimerOff,
@@ -32,6 +33,15 @@ type Counterpart = {
   last_seen_at: string | null;
 };
 
+type PickedVenue = {
+  id: number;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  image_url: string | null;
+};
+
 type Match = {
   id: number;
   initiator_id: number;
@@ -46,6 +56,18 @@ type Match = {
   counterpart: Counterpart;
   unread_count: number;
   counterpart_last_read_id: number;
+  picked_venue: PickedVenue | null;
+  meeting_at: string | null;
+};
+
+type VenueMessageMeta = {
+  venue_id: number;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  image_url?: string | null;
+  meeting_at: string;
 };
 
 type ChatMessage = {
@@ -53,6 +75,8 @@ type ChatMessage = {
   sender_id: number;
   body: string;
   created_at: string;
+  kind?: string;
+  meta?: VenueMessageMeta | null;
   pending?: boolean;
   failed?: boolean;
 };
@@ -307,15 +331,45 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
       <main className="mx-auto flex h-[calc(100vh-4rem)] max-w-3xl flex-col px-4 sm:px-6">
         <ChatTopbar match={match} />
 
-        {status === "matched" && (
+        {status === "matched" && match.picked_venue && match.meeting_at && (
           <Banner tone="matcha" icon={<Sparkles className="h-4 w-4" />}>
-            <span>{t("matchedBanner")}</span>
-            <Link
-              href={`/match/${match.id}/venues`}
-              className="ml-auto inline-flex items-center rounded-full bg-matcha-300 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-ink-950 transition hover:bg-matcha-200"
-            >
-              {t("findVenue")}
-            </Link>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-matcha-50">
+                {t("venuePicked")}: {match.picked_venue.name}
+              </p>
+              <p className="truncate text-[11px] text-matcha-200">
+                {match.picked_venue.address} ·{" "}
+                {new Date(match.meeting_at).toLocaleString(locale, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </p>
+            </div>
+            {match.am_initiator && (
+              <Link
+                href={`/match/${match.id}/venues`}
+                className="inline-flex items-center rounded-full border border-matcha-300/40 bg-matcha-300/15 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-matcha-100 hover:bg-matcha-300/25"
+              >
+                {t("venueChange")}
+              </Link>
+            )}
+          </Banner>
+        )}
+        {status === "matched" && !match.picked_venue && (
+          <Banner tone="matcha" icon={<Sparkles className="h-4 w-4" />}>
+            {match.am_initiator ? (
+              <>
+                <span>{t("matchedBanner")}</span>
+                <Link
+                  href={`/match/${match.id}/venues`}
+                  className="ml-auto inline-flex items-center rounded-full bg-matcha-300 px-3 py-1 text-[11px] font-medium uppercase tracking-wider text-ink-950 hover:bg-matcha-200"
+                >
+                  {t("findVenue")}
+                </Link>
+              </>
+            ) : (
+              <span>{t("matchedHerView")}</span>
+            )}
           </Banner>
         )}
         {status === "expired" && (
@@ -335,26 +389,35 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
           {messages.length === 0 ? (
             <p className="my-12 text-center text-sm text-zinc-500">{t("empty")}</p>
           ) : (
-            messages.map((msg) => (
-              <Bubble
-                key={msg.id}
-                mine={msg.sender_id !== match.counterpart.user_id}
-                body={msg.body}
-                time={new Date(msg.created_at).toLocaleTimeString(locale, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                status={
-                  msg.failed
-                    ? "failed"
-                    : msg.pending
-                      ? "sending"
-                      : msg.id > 0 && msg.id <= match.counterpart_last_read_id
-                        ? "read"
-                        : "sent"
-                }
-              />
-            ))
+            messages.map((msg) => {
+              const mine = msg.sender_id !== match.counterpart.user_id;
+              const time = new Date(msg.created_at).toLocaleTimeString(locale, {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              if (msg.kind === "venue" && msg.meta) {
+                return (
+                  <VenueBubble key={msg.id} mine={mine} time={time} meta={msg.meta} locale={locale} />
+                );
+              }
+              return (
+                <Bubble
+                  key={msg.id}
+                  mine={mine}
+                  body={msg.body}
+                  time={time}
+                  status={
+                    msg.failed
+                      ? "failed"
+                      : msg.pending
+                        ? "sending"
+                        : msg.id > 0 && msg.id <= match.counterpart_last_read_id
+                          ? "read"
+                          : "sent"
+                  }
+                />
+              );
+            })
           )}
         </div>
 
@@ -499,6 +562,66 @@ function QuotaLine({ match }: { match: Match }) {
         ? t("messagesLeftInitiator", { used: match.quota_used, limit: match.quota_limit })
         : t("messagesLeftRecipient", { used: match.quota_used, limit: match.quota_limit })}
     </p>
+  );
+}
+
+function VenueBubble({
+  mine,
+  time,
+  meta,
+  locale,
+}: {
+  mine: boolean;
+  time: string;
+  meta: VenueMessageMeta;
+  locale: string;
+}) {
+  const t = useTranslations("chat");
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${meta.lat},${meta.lng}`;
+  const meetWhen = new Date(meta.meeting_at).toLocaleString(locale, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+  return (
+    <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+      <div className="w-full max-w-[88%] overflow-hidden rounded-2xl border border-matcha-300/30 bg-matcha-300/10 text-matcha-50 shadow-glow">
+        {meta.image_url && (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={meta.image_url}
+            alt={meta.name}
+            className="h-32 w-full object-cover"
+          />
+        )}
+        <div className="space-y-2 p-4">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-matcha-200">
+            {t("venuePicked")}
+          </p>
+          <p className="font-display text-lg leading-tight text-zinc-50">
+            {meta.name}
+          </p>
+          <p className="inline-flex items-start gap-1.5 text-xs text-matcha-100">
+            <MapPin className="mt-0.5 h-3 w-3 flex-shrink-0" />
+            {meta.address}
+          </p>
+          <p className="text-xs text-matcha-200">
+            <span className="uppercase tracking-wider">{t("venueAt")}:</span> {meetWhen}
+          </p>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-matcha-300/40 bg-matcha-300/10 px-3 py-1.5 text-[11px] uppercase tracking-wider text-matcha-100 hover:bg-matcha-300/20"
+          >
+            <MapPin className="h-3 w-3" />
+            Maps
+          </a>
+          <p className="mt-1 text-[10px] uppercase tracking-wider text-matcha-200/70">
+            {time}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 

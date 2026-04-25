@@ -33,9 +33,21 @@ class VenueWithPromos(VenueOut):
     distance_km: float | None = None
 
 
+class PointLite(BaseModel):
+    lat: float
+    lng: float
+
+
+class PartnerPoint(PointLite):
+    gender: str  # "male" | "female"
+
+
 class MatchVenueRecommendation(BaseModel):
     midpoint_lat: float
     midpoint_lng: float
+    me: PointLite
+    partner: PartnerPoint
+    can_pick: bool
     items: list[VenueWithPromos]
 
 

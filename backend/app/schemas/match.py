@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -18,6 +19,15 @@ class CounterpartCard(BaseModel):
     last_seen_at: datetime | None = None  # null when other side hides presence
 
 
+class PickedVenueLite(BaseModel):
+    id: int
+    name: str
+    address: str
+    lat: float
+    lng: float
+    image_url: str | None = None
+
+
 class MatchOut(BaseModel):
     id: int
     initiator_id: int
@@ -32,6 +42,8 @@ class MatchOut(BaseModel):
     counterpart: CounterpartCard
     unread_count: int = 0
     counterpart_last_read_id: int = 0
+    picked_venue: PickedVenueLite | None = None
+    meeting_at: datetime | None = None
 
 
 class MessageOut(BaseModel):
@@ -39,6 +51,8 @@ class MessageOut(BaseModel):
     sender_id: int
     body: str
     created_at: datetime
+    kind: str = "text"
+    meta: dict[str, Any] | None = None
 
 
 class MessagesPage(BaseModel):
@@ -74,3 +88,10 @@ class MatchListItem(BaseModel):
     counterpart: CounterpartCard
     unread_count: int = 0
     counterpart_last_read_id: int = 0
+    picked_venue: PickedVenueLite | None = None
+    meeting_at: datetime | None = None
+
+
+class PickVenueIn(BaseModel):
+    venue_id: int
+    meeting_at: datetime

@@ -23,9 +23,13 @@ from app.schemas.match import (
     MessageCreateIn,
     MessageOut,
     MessagesPage,
+    PickedVenueLite,
+    PickVenueIn,
 )
 from app.schemas.venue import (
     MatchVenueRecommendation,
+    PartnerPoint,
+    PointLite,
     PromoOut,
     VenueWithPromos,
 )
@@ -102,11 +106,32 @@ def _ensure_participant(m: Match, user_id: int) -> str:
     raise HTTPException(status.HTTP_403_FORBIDDEN, "not a participant")
 
 
+async def _picked_venue(
+    db: AsyncSession, venue_id: int | None
+) -> PickedVenueLite | None:
+    if venue_id is None:
+        return None
+    v = (
+        await db.execute(select(Venue).where(Venue.id == venue_id))
+    ).scalar_one_or_none()
+    if not v:
+        return None
+    return PickedVenueLite(
+        id=v.id,
+        name=v.name,
+        address=v.address,
+        lat=v.lat,
+        lng=v.lng,
+        image_url=v.image_url,
+    )
+
+
 def _to_out(
     m: Match,
     user_id: int,
     counterpart: CounterpartCard,
     unread_count: int = 0,
+    picked_venue: PickedVenueLite | None = None,
 ) -> MatchOut:
     am_init = user_id == m.initiator_id
     other_read = m.recipient_last_read_id if am_init else m.initiator_last_read_id
@@ -124,6 +149,8 @@ def _to_out(
         counterpart=counterpart,
         unread_count=unread_count,
         counterpart_last_read_id=other_read,
+        picked_venue=picked_venue,
+        meeting_at=m.meeting_at,
     )
 
 
@@ -209,7 +236,8 @@ async def get_or_create_match(
 
     counterpart = await _load_counterpart(db, user_id)
     unread = await _unread_for(db, existing, user.id)
-    return _to_out(existing, user.id, counterpart, unread)
+    picked = await _picked_venue(db, existing.picked_venue_id)
+    return _to_out(existing, user.id, counterpart, unread, picked)
 
 
 @router.get("", response_model=list[MatchListItem])
@@ -240,6 +268,7 @@ async def my_inbox(
         unread = await _unread_for(db, m, user.id)
         am_init = user.id == m.initiator_id
         other_read = m.recipient_last_read_id if am_init else m.initiator_last_read_id
+        picked = await _picked_venue(db, m.picked_venue_id)
         items.append(
             MatchListItem(
                 id=m.id,
@@ -253,6 +282,8 @@ async def my_inbox(
                 counterpart=counterpart,
                 unread_count=unread,
                 counterpart_last_read_id=other_read,
+                picked_venue=picked,
+                meeting_at=m.meeting_at,
             )
         )
     return items
@@ -273,7 +304,8 @@ async def get_match(
     other_id = m.recipient_id if user.id == m.initiator_id else m.initiator_id
     counterpart = await _load_counterpart(db, other_id)
     unread = await _unread_for(db, m, user.id)
-    return _to_out(m, user.id, counterpart, unread)
+    picked = await _picked_venue(db, m.picked_venue_id)
+    return _to_out(m, user.id, counterpart, unread, picked)
 
 
 @router.get("/{match_id}/messages", response_model=MessagesPage)
@@ -299,7 +331,14 @@ async def list_messages(
     rows = (await db.execute(stmt)).scalars().all()
     return MessagesPage(
         items=[
-            MessageOut(id=r.id, sender_id=r.sender_id, body=r.body, created_at=r.created_at)
+            MessageOut(
+                id=r.id,
+                sender_id=r.sender_id,
+                body=r.body,
+                created_at=r.created_at,
+                kind=r.kind,
+                meta=r.meta,
+            )
             for r in rows
         ]
     )
@@ -344,7 +383,14 @@ async def send_message(
 
     await db.commit()
     await db.refresh(msg)
-    return MessageOut(id=msg.id, sender_id=msg.sender_id, body=msg.body, created_at=msg.created_at)
+    return MessageOut(
+        id=msg.id,
+        sender_id=msg.sender_id,
+        body=msg.body,
+        created_at=msg.created_at,
+        kind=msg.kind,
+        meta=msg.meta,
+    )
 
 
 @router.post("/{match_id}/read", response_model=MatchOut)
@@ -380,7 +426,8 @@ async def mark_read(
 
     other_id = m.recipient_id if role == "initiator" else m.initiator_id
     counterpart = await _load_counterpart(db, other_id)
-    return _to_out(m, user.id, counterpart, 0)
+    picked = await _picked_venue(db, m.picked_venue_id)
+    return _to_out(m, user.id, counterpart, 0, picked)
 
 
 @router.post("/{match_id}/agree", response_model=MatchOut)
@@ -407,7 +454,8 @@ async def agree_to_meet(
     await db.refresh(m)
     counterpart = await _load_counterpart(db, m.initiator_id)
     unread = await _unread_for(db, m, user.id)
-    return _to_out(m, user.id, counterpart, unread)
+    picked = await _picked_venue(db, m.picked_venue_id)
+    return _to_out(m, user.id, counterpart, unread, picked)
 
 
 @router.post("/{match_id}/extend", response_model=MatchOut)
@@ -441,7 +489,8 @@ async def extend_quota(
     await db.refresh(m)
     counterpart = await _load_counterpart(db, m.initiator_id)
     unread = await _unread_for(db, m, user.id)
-    return _to_out(m, user.id, counterpart, unread)
+    picked = await _picked_venue(db, m.picked_venue_id)
+    return _to_out(m, user.id, counterpart, unread, picked)
 
 
 @router.get("/{match_id}/venues", response_model=MatchVenueRecommendation)
@@ -456,7 +505,7 @@ async def venue_recommendations(
     ).scalar_one_or_none()
     if not m:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "match not found")
-    _ensure_participant(m, user.id)
+    role = _ensure_participant(m, user.id)
     if m.status != MatchStatus.matched:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "venues unlock only after both agree"
@@ -534,6 +583,94 @@ async def venue_recommendations(
         )
         for v, d in enriched
     ]
+
+    me_profile = initiator_profile if role == "initiator" else recipient_profile
+    partner_profile = recipient_profile if role == "initiator" else initiator_profile
+
     return MatchVenueRecommendation(
-        midpoint_lat=mid_lat, midpoint_lng=mid_lng, items=items
+        midpoint_lat=mid_lat,
+        midpoint_lng=mid_lng,
+        me=PointLite(lat=me_profile.lat, lng=me_profile.lng),
+        partner=PartnerPoint(
+            lat=partner_profile.lat,
+            lng=partner_profile.lng,
+            gender=partner_profile.gender.value,
+        ),
+        can_pick=(role == "initiator"),
+        items=items,
     )
+
+
+@router.post("/{match_id}/pick-venue", response_model=MatchOut)
+async def pick_venue(
+    match_id: int,
+    payload: PickVenueIn,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> MatchOut:
+    m = (
+        await db.execute(select(Match).where(Match.id == match_id))
+    ).scalar_one_or_none()
+    if not m:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "match not found")
+    role = _ensure_participant(m, user.id)
+    if role != "initiator":
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "only the man picks the venue"
+        )
+    if m.status != MatchStatus.matched:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT, "match must be matched first"
+        )
+
+    venue = (
+        await db.execute(
+            select(Venue).where(
+                Venue.id == payload.venue_id,
+                Venue.is_active.is_(True),
+            )
+        )
+    ).scalar_one_or_none()
+    if not venue:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "venue not found")
+
+    meet = payload.meeting_at
+    if meet.tzinfo is None:
+        meet = meet.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    if meet <= now:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "meeting time must be in the future"
+        )
+
+    m.picked_venue_id = venue.id
+    m.meeting_at = meet
+
+    meta = {
+        "venue_id": venue.id,
+        "name": venue.name,
+        "address": venue.address,
+        "lat": venue.lat,
+        "lng": venue.lng,
+        "image_url": venue.image_url,
+        "meeting_at": meet.isoformat(),
+    }
+    body_summary = (
+        f"\U0001F4CD {venue.name} — {venue.address} · "
+        f"{meet.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"
+    )
+    msg = Message(
+        match_id=m.id,
+        sender_id=user.id,
+        body=body_summary,
+        kind="venue",
+        meta=meta,
+    )
+    db.add(msg)
+    await db.commit()
+    await db.refresh(m)
+
+    counterpart = await _load_counterpart(db, m.recipient_id)
+    unread = await _unread_for(db, m, user.id)
+    picked = await _picked_venue(db, m.picked_venue_id)
+    return _to_out(m, user.id, counterpart, unread, picked)
