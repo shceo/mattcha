@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { Link, useRouter } from "@/i18n/routing";
 import { ApiError, api, apiBaseUrl } from "@/lib/api";
 import { clearTokens, hasToken } from "@/lib/auth";
+import { formatTashkentTime } from "@/lib/dates";
 
 type CounterpartCard = {
   user_id: number;
@@ -111,10 +112,7 @@ export default function MatchesPage() {
                     <div className="flex flex-col items-end gap-1 text-right">
                       {m.last_message_at && (
                         <span className="text-[11px] text-zinc-500">
-                          {new Date(m.last_message_at).toLocaleString(locale, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                          {formatTashkentTime(m.last_message_at, locale)}
                         </span>
                       )}
                       {m.unread_count > 0 ? (

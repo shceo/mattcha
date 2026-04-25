@@ -20,6 +20,7 @@ import { Header } from "@/components/Header";
 import { Link, useRouter } from "@/i18n/routing";
 import { ApiError, api, apiBaseUrl } from "@/lib/api";
 import { clearTokens, hasToken } from "@/lib/auth";
+import { formatTashkentDateTime, formatTashkentTime } from "@/lib/dates";
 import { presenceFrom } from "@/lib/presence";
 import { bumpUnread } from "@/lib/useUnread";
 
@@ -339,10 +340,7 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
               </p>
               <p className="truncate text-[11px] text-matcha-200">
                 {match.picked_venue.address} ·{" "}
-                {new Date(match.meeting_at).toLocaleString(locale, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
+                {formatTashkentDateTime(match.meeting_at, locale)}
               </p>
             </div>
             {match.am_initiator && (
@@ -391,10 +389,7 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
           ) : (
             messages.map((msg) => {
               const mine = msg.sender_id !== match.counterpart.user_id;
-              const time = new Date(msg.created_at).toLocaleTimeString(locale, {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+              const time = formatTashkentTime(msg.created_at, locale);
               if (msg.kind === "venue" && msg.meta) {
                 return (
                   <VenueBubble key={msg.id} mine={mine} time={time} meta={msg.meta} locale={locale} />
@@ -578,10 +573,7 @@ function VenueBubble({
 }) {
   const t = useTranslations("chat");
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${meta.lat},${meta.lng}`;
-  const meetWhen = new Date(meta.meeting_at).toLocaleString(locale, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const meetWhen = formatTashkentDateTime(meta.meeting_at, locale);
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div className="w-full max-w-[88%] overflow-hidden rounded-2xl border border-matcha-300/30 bg-matcha-300/10 text-matcha-50 shadow-glow">

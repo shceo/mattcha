@@ -19,6 +19,7 @@ import { Header } from "@/components/Header";
 import { Link, useRouter } from "@/i18n/routing";
 import { ApiError, api } from "@/lib/api";
 import { clearTokens, hasToken } from "@/lib/auth";
+import { isFutureTashkent, tashkentIso } from "@/lib/dates";
 import { toast } from "@/lib/toast";
 
 const VenueMap = dynamic(() => import("@/components/VenueMap"), { ssr: false });
@@ -235,16 +236,15 @@ function VenueCard({
 
   async function submit() {
     if (!date || !time) return;
-    const localIso = `${date}T${time}:00`;
-    const dt = new Date(localIso);
-    if (Number.isNaN(dt.getTime()) || dt.getTime() <= Date.now()) {
+    const iso = tashkentIso(date, time);
+    if (!isFutureTashkent(iso)) {
       setErr(t("datePast"));
       return;
     }
     setErr(null);
     setSubmitting(true);
     try {
-      await onPick(venue.id, dt.toISOString());
+      await onPick(venue.id, iso);
     } finally {
       setSubmitting(false);
     }
