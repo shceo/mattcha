@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.admin import router as admin_router
 from app.api.auth import router as auth_router
+from app.api.content import router as content_router
 from app.api.discover import router as discover_router
 from app.api.matches import router as matches_router
 from app.api.profile import router as profile_router
@@ -31,6 +32,7 @@ app.include_router(auth_router)
 app.include_router(profile_router)
 app.include_router(discover_router)
 app.include_router(matches_router)
+app.include_router(content_router)
 app.include_router(admin_router)
 
 uploads_dir = Path(settings.uploads_dir)

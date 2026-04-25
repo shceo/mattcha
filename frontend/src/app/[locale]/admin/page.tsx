@@ -18,6 +18,9 @@ import { Header } from "@/components/Header";
 import { useRouter } from "@/i18n/routing";
 import { ApiError, api, apiBaseUrl } from "@/lib/api";
 import { clearTokens, fetchMe, hasToken, type Me } from "@/lib/auth";
+import { toast } from "@/lib/toast";
+
+import { ContentTab } from "./ContentTab";
 
 const inputCls =
   "w-full rounded-xl border border-white/10 bg-ink-800/60 px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-matcha-300/50 focus:bg-ink-800";
@@ -59,7 +62,7 @@ type Venue = {
   distance_km: number | null;
 };
 
-type Tab = "users" | "venues";
+type Tab = "users" | "venues" | "content";
 
 export default function AdminPage() {
   const t = useTranslations("admin");
@@ -119,7 +122,7 @@ export default function AdminPage() {
           </h1>
 
           <div className="mt-8 inline-flex rounded-full border border-white/10 bg-ink-800/60 p-1 text-xs">
-            {(["users", "venues"] as Tab[]).map((key) => (
+            {(["users", "venues", "content"] as Tab[]).map((key) => (
               <button
                 key={key}
                 onClick={() => setTab(key)}
@@ -129,13 +132,19 @@ export default function AdminPage() {
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
-                {t(`tabs.${key}` as "tabs.users" | "tabs.venues")}
+                {t(`tabs.${key}` as "tabs.users" | "tabs.venues" | "tabs.content")}
               </button>
             ))}
           </div>
 
           <div className="mt-8">
-            {tab === "users" ? <UsersTab adminId={me.id} /> : <VenuesTab />}
+            {tab === "users" ? (
+              <UsersTab adminId={me.id} />
+            ) : tab === "venues" ? (
+              <VenuesTab />
+            ) : (
+              <ContentTab />
+            )}
           </div>
         </section>
       </main>
@@ -147,6 +156,7 @@ export default function AdminPage() {
 
 function UsersTab({ adminId }: { adminId: number }) {
   const t = useTranslations("admin.users");
+  const tToast = useTranslations("toast");
   const [items, setItems] = useState<AdminUser[]>([]);
   const [total, setTotal] = useState(0);
   const [q, setQ] = useState("");
@@ -181,18 +191,33 @@ function UsersTab({ adminId }: { adminId: number }) {
   }
 
   async function ban(id: number) {
-    const u = await api<AdminUser>(`/admin/users/${id}/ban`, { method: "POST" });
-    setItems((prev) => prev.map((x) => (x.id === id ? u : x)));
+    try {
+      const u = await api<AdminUser>(`/admin/users/${id}/ban`, { method: "POST" });
+      setItems((prev) => prev.map((x) => (x.id === id ? u : x)));
+      toast.success(tToast("userBanned"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
   async function unban(id: number) {
-    const u = await api<AdminUser>(`/admin/users/${id}/unban`, { method: "POST" });
-    setItems((prev) => prev.map((x) => (x.id === id ? u : x)));
+    try {
+      const u = await api<AdminUser>(`/admin/users/${id}/unban`, { method: "POST" });
+      setItems((prev) => prev.map((x) => (x.id === id ? u : x)));
+      toast.success(tToast("userUnbanned"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
   async function remove(id: number) {
     if (!confirm(t("confirmDelete"))) return;
-    await api(`/admin/users/${id}`, { method: "DELETE" });
-    setItems((prev) => prev.filter((x) => x.id !== id));
-    setTotal((n) => Math.max(0, n - 1));
+    try {
+      await api(`/admin/users/${id}`, { method: "DELETE" });
+      setItems((prev) => prev.filter((x) => x.id !== id));
+      setTotal((n) => Math.max(0, n - 1));
+      toast.success(tToast("userDeleted"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   return (
@@ -338,6 +363,7 @@ const emptyDraft: VenueDraft = {
 
 function VenuesTab() {
   const t = useTranslations("admin.venues");
+  const tToast = useTranslations("toast");
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -358,29 +384,44 @@ function VenuesTab() {
   }, []);
 
   async function createVenue(draft: VenueDraft) {
-    const v = await api<Venue>("/admin/venues", {
-      method: "POST",
-      json: serializeDraft(draft),
-    });
-    setVenues((prev) => [{ ...v, promos: [], distance_km: null }, ...prev]);
-    setCreating(false);
+    try {
+      const v = await api<Venue>("/admin/venues", {
+        method: "POST",
+        json: serializeDraft(draft),
+      });
+      setVenues((prev) => [{ ...v, promos: [], distance_km: null }, ...prev]);
+      setCreating(false);
+      toast.success(tToast("venueSaved"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   async function updateVenue(id: number, draft: VenueDraft) {
-    const v = await api<Venue>(`/admin/venues/${id}`, {
-      method: "PATCH",
-      json: serializeDraft(draft),
-    });
-    setVenues((prev) =>
-      prev.map((x) => (x.id === id ? { ...x, ...v } : x)),
-    );
-    setEditingId(null);
+    try {
+      const v = await api<Venue>(`/admin/venues/${id}`, {
+        method: "PATCH",
+        json: serializeDraft(draft),
+      });
+      setVenues((prev) =>
+        prev.map((x) => (x.id === id ? { ...x, ...v } : x)),
+      );
+      setEditingId(null);
+      toast.success(tToast("venueSaved"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   async function deleteVenue(id: number) {
     if (!confirm(t("confirmDelete"))) return;
-    await api(`/admin/venues/${id}`, { method: "DELETE" });
-    setVenues((prev) => prev.filter((x) => x.id !== id));
+    try {
+      await api(`/admin/venues/${id}`, { method: "DELETE" });
+      setVenues((prev) => prev.filter((x) => x.id !== id));
+      toast.success(tToast("venueDeleted"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   if (loading) {
@@ -684,28 +725,44 @@ function PromosSection({
   onChange: (promos: Promo[]) => void;
 }) {
   const t = useTranslations("admin.promos");
+  const tToast = useTranslations("toast");
   const [adding, setAdding] = useState(false);
 
   async function add(draft: { code: string; description: string; discount_text: string; is_active: boolean }) {
-    const created = await api<Promo>(`/admin/venues/${venue.id}/promos`, {
-      method: "POST",
-      json: draft,
-    });
-    onChange([...venue.promos, created]);
-    setAdding(false);
+    try {
+      const created = await api<Promo>(`/admin/venues/${venue.id}/promos`, {
+        method: "POST",
+        json: draft,
+      });
+      onChange([...venue.promos, created]);
+      setAdding(false);
+      toast.success(tToast("promoSaved"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   async function update(id: number, draft: Partial<Promo>) {
-    const updated = await api<Promo>(`/admin/promos/${id}`, {
-      method: "PATCH",
-      json: draft,
-    });
-    onChange(venue.promos.map((p) => (p.id === id ? updated : p)));
+    try {
+      const updated = await api<Promo>(`/admin/promos/${id}`, {
+        method: "PATCH",
+        json: draft,
+      });
+      onChange(venue.promos.map((p) => (p.id === id ? updated : p)));
+      toast.success(tToast("promoSaved"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   async function remove(id: number) {
-    await api(`/admin/promos/${id}`, { method: "DELETE" });
-    onChange(venue.promos.filter((p) => p.id !== id));
+    try {
+      await api(`/admin/promos/${id}`, { method: "DELETE" });
+      onChange(venue.promos.filter((p) => p.id !== id));
+      toast.success(tToast("promoDeleted"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   return (

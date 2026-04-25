@@ -11,9 +11,11 @@ from app.api.deps import require_admin
 from app.db import get_db
 from app.models.photo import Photo
 from app.models.profile import Profile
+from app.models.site_content import SiteContent
 from app.models.user import User
 from app.models.venue import PromoCode, Venue
 from app.schemas.admin import AdminUserListItem, AdminUsersPage
+from app.schemas.content import LandingContent, landing_dump
 from app.schemas.venue import (
     PromoIn,
     PromoOut,
@@ -297,3 +299,61 @@ async def delete_promo(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "promo not found")
     await db.delete(p)
     await db.commit()
+
+
+# --- Site content (CMS) ----------------------------------------------------
+
+ALLOWED_LOCALES = {"ru", "en", "uz"}
+
+
+@router.get("/content/landing/{locale}")
+async def admin_get_landing(
+    locale: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict | None:
+    if locale not in ALLOWED_LOCALES:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "unknown locale")
+    row = (
+        await db.execute(select(SiteContent).where(SiteContent.locale == locale))
+    ).scalar_one_or_none()
+    return row.payload if row else None
+
+
+@router.put("/content/landing/{locale}")
+async def admin_put_landing(
+    locale: str,
+    payload: LandingContent,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> dict:
+    if locale not in ALLOWED_LOCALES:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "unknown locale")
+    serialized = landing_dump(payload)
+    row = (
+        await db.execute(select(SiteContent).where(SiteContent.locale == locale))
+    ).scalar_one_or_none()
+    if row:
+        row.payload = serialized
+    else:
+        row = SiteContent(locale=locale, payload=serialized)
+        db.add(row)
+    await db.commit()
+    return serialized
+
+
+@router.delete(
+    "/content/landing/{locale}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
+async def admin_delete_landing(
+    locale: str,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> None:
+    if locale not in ALLOWED_LOCALES:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "unknown locale")
+    row = (
+        await db.execute(select(SiteContent).where(SiteContent.locale == locale))
+    ).scalar_one_or_none()
+    if row:
+        await db.delete(row)
+        await db.commit()

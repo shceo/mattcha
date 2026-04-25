@@ -244,18 +244,35 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
     if (!body || sending || !canSend) return;
     setSending(true);
     setError(null);
+
+    const meId = match.am_initiator ? match.initiator_id : match.recipient_id;
+    const tempId = -Date.now();
+    const optimistic: ChatMessage = {
+      id: tempId,
+      sender_id: meId,
+      body,
+      created_at: new Date().toISOString(),
+      pending: true,
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    setDraft("");
+    scrollToBottom();
+
     try {
       const created = await api<ChatMessage>(`/matches/${match.id}/messages`, {
         method: "POST",
         json: { body },
       });
-      setMessages((prev) => mergeMessages(prev, [created]));
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...created } : m)),
+      );
       lastIdRef.current = Math.max(lastIdRef.current, created.id);
-      setDraft("");
       const m = await api<Match>(`/matches/${match.id}`);
       setMatch(m);
-      scrollToBottom();
     } catch (err) {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === tempId ? { ...m, pending: false, failed: true } : m)),
+      );
       if (err instanceof ApiError && typeof err.detail === "string") setError(err.detail);
       else setError("error");
     } finally {
@@ -327,6 +344,15 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
+                status={
+                  msg.failed
+                    ? "failed"
+                    : msg.pending
+                      ? "sending"
+                      : msg.id > 0 && msg.id <= match.counterpart_last_read_id
+                        ? "read"
+                        : "sent"
+                }
               />
             ))
           )}
@@ -385,30 +411,36 @@ function ChatTopbar({ match }: { match: Match }) {
       >
         <ArrowLeft className="h-4 w-4" />
       </Link>
-      <div className="h-10 w-10 overflow-hidden rounded-full border border-white/10 bg-ink-800">
-        {match.counterpart.primary_photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={`${apiBaseUrl}${match.counterpart.primary_photo_url}`}
-            alt={match.counterpart.full_name}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-zinc-700">
-            <UserCircle2 className="h-6 w-6" />
-          </div>
-        )}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2 truncate">
-          <span className="truncate font-display text-lg text-zinc-50">
-            {match.counterpart.full_name}
-          </span>
-          <span className="text-zinc-500">{match.counterpart.age}</span>
+      <Link
+        href={`/profile/${match.counterpart.user_id}`}
+        title={t("openProfile")}
+        className="group flex min-w-0 flex-1 items-center gap-3 rounded-xl px-1 py-1 transition hover:bg-white/5"
+      >
+        <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-white/10 bg-ink-800 transition group-hover:border-matcha-300/40">
+          {match.counterpart.primary_photo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`${apiBaseUrl}${match.counterpart.primary_photo_url}`}
+              alt={match.counterpart.full_name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-zinc-700">
+              <UserCircle2 className="h-6 w-6" />
+            </div>
+          )}
         </div>
-        <PresenceLine lastSeen={match.counterpart.last_seen_at} />
-        <QuotaLine match={match} />
-      </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 truncate">
+            <span className="truncate font-display text-lg text-zinc-50">
+              {match.counterpart.full_name}
+            </span>
+            <span className="text-zinc-500">{match.counterpart.age}</span>
+          </div>
+          <PresenceLine lastSeen={match.counterpart.last_seen_at} />
+          <QuotaLine match={match} />
+        </div>
+      </Link>
     </div>
   );
 }
@@ -470,23 +502,48 @@ function QuotaLine({ match }: { match: Match }) {
   );
 }
 
-function Bubble({ mine, body, time }: { mine: boolean; body: string; time: string }) {
+type BubbleStatus = "sending" | "sent" | "read" | "failed";
+
+function Bubble({
+  mine,
+  body,
+  time,
+  status,
+}: {
+  mine: boolean;
+  body: string;
+  time: string;
+  status?: BubbleStatus;
+}) {
+  const t = useTranslations("chat.status");
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       <div
         className={`max-w-[78%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
           mine
-            ? "bg-matcha-300 text-ink-950"
+            ? `bg-matcha-300 text-ink-950 ${status === "failed" ? "opacity-70" : ""}`
             : "border border-white/10 bg-ink-800 text-zinc-100"
         }`}
       >
         <p className="whitespace-pre-wrap break-words">{body}</p>
         <p
-          className={`mt-1 text-[10px] uppercase tracking-wider ${
-            mine ? "text-ink-950/60" : "text-zinc-500"
+          className={`mt-1 inline-flex items-center gap-1 text-[10px] uppercase tracking-wider ${
+            mine ? "text-ink-950/70" : "text-zinc-500"
           }`}
         >
-          {time}
+          <span>{time}</span>
+          {mine && status && (
+            <span title={t(status)} className="inline-flex items-center">
+              {status === "sending" && <Clock className="h-3 w-3 animate-pulse" />}
+              {status === "sent" && <Check className="h-3 w-3" />}
+              {status === "read" && (
+                <CheckCheck className="h-3 w-3 text-matcha-700" />
+              )}
+              {status === "failed" && (
+                <Clock className="h-3 w-3 rotate-180 text-red-700" />
+              )}
+            </span>
+          )}
         </p>
       </div>
     </div>

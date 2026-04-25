@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { useRouter } from "@/i18n/routing";
 import { ApiError, api, apiBaseUrl } from "@/lib/api";
 import { clearTokens, hasToken } from "@/lib/auth";
+import { toast } from "@/lib/toast";
 
 type Gender = "male" | "female";
 
@@ -40,6 +41,7 @@ const inputCls =
 export default function ProfilePage() {
   const t = useTranslations("profile");
   const tCommon = useTranslations("common");
+  const tToast = useTranslations("toast");
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -138,12 +140,14 @@ export default function ProfilePage() {
         });
         setProfile(updated);
       }
+      toast.success(tToast("profileSaved"));
     } catch (err) {
       if (err instanceof ApiError && typeof err.detail === "string") {
         setError(err.detail);
       } else {
         setError("generic");
       }
+      toast.error(tToast("saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -391,6 +395,7 @@ function PhotoSection({
   onChange: (p: Profile) => void;
 }) {
   const t = useTranslations("profile");
+  const tToast = useTranslations("toast");
   const fileInput = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -408,9 +413,11 @@ function PhotoSection({
         body: fd,
       });
       onChange({ ...profile, photos: [...profile.photos, created] });
+      toast.success(tToast("photoUploaded"));
     } catch (err) {
       if (err instanceof ApiError && typeof err.detail === "string") setError(err.detail);
       else setError("upload failed");
+      toast.error(tToast("saveFailed"));
     } finally {
       setUploading(false);
       if (fileInput.current) fileInput.current.value = "";
@@ -418,23 +425,33 @@ function PhotoSection({
   }
 
   async function makePrimary(photoId: number) {
-    const updated = await api<Photo>(`/profile/me/photos/${photoId}/primary`, {
-      method: "POST",
-    });
-    onChange({
-      ...profile,
-      photos: profile.photos.map((p) => ({
-        ...p,
-        is_primary: p.id === updated.id,
-      })),
-    });
+    try {
+      const updated = await api<Photo>(`/profile/me/photos/${photoId}/primary`, {
+        method: "POST",
+      });
+      onChange({
+        ...profile,
+        photos: profile.photos.map((p) => ({
+          ...p,
+          is_primary: p.id === updated.id,
+        })),
+      });
+      toast.success(tToast("photoPrimary"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   async function deletePhoto(photoId: number) {
-    await api(`/profile/me/photos/${photoId}`, { method: "DELETE" });
-    const next = profile.photos.filter((p) => p.id !== photoId);
-    if (!next.some((p) => p.is_primary) && next[0]) next[0].is_primary = true;
-    onChange({ ...profile, photos: next });
+    try {
+      await api(`/profile/me/photos/${photoId}`, { method: "DELETE" });
+      const next = profile.photos.filter((p) => p.id !== photoId);
+      if (!next.some((p) => p.is_primary) && next[0]) next[0].is_primary = true;
+      onChange({ ...profile, photos: next });
+      toast.success(tToast("photoDeleted"));
+    } catch {
+      toast.error(tToast("saveFailed"));
+    }
   }
 
   return (

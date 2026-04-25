@@ -18,6 +18,7 @@
     "title": "Fifteen messages to impress her",
     "subtitle": "mattcha is a closed-circle dating club. Minimal, restrained, with one rule: you get exactly 15 messages to invite her on a date.",
     "ctaPrimary": "Create profile",
+    "ctaPrimaryAuthed": "Go to profile",
     "ctaSecondary": "Learn more",
     "stats": {
       "title": "No filler",
@@ -68,7 +69,11 @@
       "kicker": "Ready?",
       "title": "Time to write thoughtfully.",
       "subtitle": "Sign up takes a minute. The first message — on you.",
-      "button": "Create profile"
+      "button": "Create profile",
+      "buttonAuthed": "Go to profile",
+      "kickerAuthed": "You’re in",
+      "titleAuthed": "Welcome back. Time to make moves.",
+      "subtitleAuthed": "Open the feed or continue a chat."
     },
     "footer": {
       "tagline": "Dating as a tea ceremony",
@@ -164,6 +169,20 @@
     "lastSeenOnDate": "last seen {date} at {time}",
     "hidden": "hidden"
   },
+  "toast": {
+    "profileSaved": "Profile saved",
+    "photoUploaded": "Photo uploaded",
+    "photoPrimary": "Main photo updated",
+    "photoDeleted": "Photo deleted",
+    "venueSaved": "Venue saved",
+    "venueDeleted": "Venue deleted",
+    "promoSaved": "Promo saved",
+    "promoDeleted": "Promo deleted",
+    "userBanned": "User banned",
+    "userUnbanned": "User unbanned",
+    "userDeleted": "User deleted",
+    "saveFailed": "Could not save"
+  },
   "discover": {
     "title": "Feed",
     "subtitle": "Exactly fifteen messages to impress her. Choose thoughtfully.",
@@ -240,7 +259,8 @@
     "forbidden": "Admins only",
     "tabs": {
       "users": "Users",
-      "venues": "Venues"
+      "venues": "Venues",
+      "content": "Content"
     },
     "users": {
       "search": "Search by email, phone or name",
@@ -280,6 +300,64 @@
       "save": "Save",
       "delete": "Delete",
       "empty": "No promos"
+    },
+    "content": {
+      "title": "Landing page",
+      "subtitle": "Edit texts, headlines, and links. Per locale.",
+      "saveAll": "Save",
+      "reset": "Reset to defaults",
+      "resetConfirm": "Drop overrides for this locale?",
+      "section": {
+        "hero": "Hero",
+        "stats": "Stats",
+        "steps": "How it works",
+        "manifesto": "Manifesto",
+        "faq": "FAQ",
+        "finalCta": "Final CTA",
+        "footer": "Footer & links"
+      },
+      "field": {
+        "kicker": "Kicker",
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "ctaPrimary": "Primary button (guest)",
+        "ctaPrimaryAuthed": "Primary button (authed)",
+        "ctaSecondary": "Secondary button",
+        "stepsKicker": "Section kicker",
+        "stepsTitle": "Section title",
+        "feature1Title": "Step 1 — title",
+        "feature1Body": "Step 1 — body",
+        "feature2Title": "Step 2 — title",
+        "feature2Body": "Step 2 — body",
+        "feature3Title": "Step 3 — title",
+        "feature3Body": "Step 3 — body",
+        "manifestoBody": "Manifesto body",
+        "manifestoSignature": "Signature",
+        "finalKicker": "Kicker (guest)",
+        "finalTitle": "Title (guest)",
+        "finalSubtitle": "Subtitle (guest)",
+        "finalButton": "Button (guest)",
+        "finalKickerAuthed": "Kicker (authed)",
+        "finalTitleAuthed": "Title (authed)",
+        "finalSubtitleAuthed": "Subtitle (authed)",
+        "finalButtonAuthed": "Button (authed)",
+        "footerTagline": "Footer tagline",
+        "footerFor": "Footer label “For”",
+        "footerUsers": "Link text “Users”",
+        "footerVenues": "Link text “Venues”",
+        "footerVenuesUrl": "URL for venues link (or mailto:)",
+        "footerPartnersEmail": "Partners email",
+        "footerCopyright": "Copyright ({year} auto-substituted)",
+        "statValue": "Number",
+        "statLabel": "Label",
+        "statHint": "Hint",
+        "faqQ": "Question",
+        "faqA": "Answer"
+      },
+      "addStat": "Add stat",
+      "addFaq": "Add question",
+      "removeItem": "Remove",
+      "loading": "Loading content…"
     }
   }
 }

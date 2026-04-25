@@ -4,6 +4,7 @@ import { Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 
 import { BottomNav } from "@/components/BottomNav";
+import { Toaster } from "@/components/Toaster";
 import { routing } from "@/i18n/routing";
 
 const inter = Inter({
@@ -43,6 +44,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
           <BottomNav />
+          <Toaster />
         </NextIntlClientProvider>
       </body>
     </html>

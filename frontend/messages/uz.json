@@ -18,6 +18,7 @@
     "title": "Uni hayratga solish uchun oʻn besh xabar",
     "subtitle": "mattcha — yopiq doiradagi tanishuv klubi. Minimalizm, vazminlik va bitta qoida: uni uchrashuvga taklif qilish uchun sizda aniq 15 ta xabar bor.",
     "ctaPrimary": "Profil yaratish",
+    "ctaPrimaryAuthed": "Profilga oʻtish",
     "ctaSecondary": "Batafsil",
     "stats": {
       "title": "Ortiqchasiz",
@@ -68,7 +69,11 @@
       "kicker": "Tayyormisiz?",
       "title": "Oʻylab yozish vaqti keldi.",
       "subtitle": "Roʻyxatdan oʻtish — bir daqiqa. Birinchi xabar — sizdan.",
-      "button": "Profil yaratish"
+      "button": "Profil yaratish",
+      "buttonAuthed": "Profilga oʻtish",
+      "kickerAuthed": "Ichkaridasiz",
+      "titleAuthed": "Yana keldingiz. Harakat vaqti.",
+      "subtitleAuthed": "Lentani oching yoki suhbatni davom ettiring."
     },
     "footer": {
       "tagline": "Tanishuv — choy marosimi kabi",
@@ -164,6 +169,20 @@
     "lastSeenOnDate": "{date} {time}da kirgan",
     "hidden": "yashirilgan"
   },
+  "toast": {
+    "profileSaved": "Profil saqlandi",
+    "photoUploaded": "Surat yuklandi",
+    "photoPrimary": "Asosiy surat yangilandi",
+    "photoDeleted": "Surat oʻchirildi",
+    "venueSaved": "Joy saqlandi",
+    "venueDeleted": "Joy oʻchirildi",
+    "promoSaved": "Promokod saqlandi",
+    "promoDeleted": "Promokod oʻchirildi",
+    "userBanned": "Foydalanuvchi banlandi",
+    "userUnbanned": "Foydalanuvchi tiklandi",
+    "userDeleted": "Foydalanuvchi oʻchirildi",
+    "saveFailed": "Saqlab boʻlmadi"
+  },
   "discover": {
     "title": "Lenta",
     "subtitle": "Uni hayratga solish uchun aniq oʻn besh xabar. Oʻylab tanlang.",
@@ -240,7 +259,8 @@
     "forbidden": "Faqat administratorlar uchun",
     "tabs": {
       "users": "Foydalanuvchilar",
-      "venues": "Joylar"
+      "venues": "Joylar",
+      "content": "Kontent"
     },
     "users": {
       "search": "Email, telefon yoki ism boʻyicha qidirish",
@@ -280,6 +300,64 @@
       "save": "Saqlash",
       "delete": "Oʻchirish",
       "empty": "Promokodlar yoʻq"
+    },
+    "content": {
+      "title": "Bosh sahifa",
+      "subtitle": "Lendingdagi matnlar, sarlavhalar va havolalar. Til boʻyicha.",
+      "saveAll": "Saqlash",
+      "reset": "Standartga qaytarish",
+      "resetConfirm": "Ushbu til uchun oʻzgarishlarni bekor qilamizmi?",
+      "section": {
+        "hero": "Bosh ekran",
+        "stats": "Raqamlar",
+        "steps": "Qanday ishlaydi",
+        "manifesto": "Manifest",
+        "faq": "Savollar",
+        "finalCta": "Yakuniy blok",
+        "footer": "Footer va havolalar"
+      },
+      "field": {
+        "kicker": "Kicker",
+        "title": "Sarlavha",
+        "subtitle": "Pastsarlavha",
+        "ctaPrimary": "Asosiy tugma (mehmon)",
+        "ctaPrimaryAuthed": "Asosiy tugma (kirgan)",
+        "ctaSecondary": "Ikkinchi tugma",
+        "stepsKicker": "Blok kicker",
+        "stepsTitle": "Blok sarlavhasi",
+        "feature1Title": "Qadam 1 — sarlavha",
+        "feature1Body": "Qadam 1 — matn",
+        "feature2Title": "Qadam 2 — sarlavha",
+        "feature2Body": "Qadam 2 — matn",
+        "feature3Title": "Qadam 3 — sarlavha",
+        "feature3Body": "Qadam 3 — matn",
+        "manifestoBody": "Manifest matni",
+        "manifestoSignature": "Imzo",
+        "finalKicker": "Kicker (mehmon)",
+        "finalTitle": "Sarlavha (mehmon)",
+        "finalSubtitle": "Pastsarlavha (mehmon)",
+        "finalButton": "Tugma (mehmon)",
+        "finalKickerAuthed": "Kicker (kirgan)",
+        "finalTitleAuthed": "Sarlavha (kirgan)",
+        "finalSubtitleAuthed": "Pastsarlavha (kirgan)",
+        "finalButtonAuthed": "Tugma (kirgan)",
+        "footerTagline": "Footer slogani",
+        "footerFor": "“Kim uchun” yozuvi",
+        "footerUsers": "“Foydalanuvchilar” havola matni",
+        "footerVenues": "“Joylar” havola matni",
+        "footerVenuesUrl": "Joylar uchun URL (yoki mailto:)",
+        "footerPartnersEmail": "Hamkorlar emaili",
+        "footerCopyright": "Copyright ({year} avto-almashinadi)",
+        "statValue": "Raqam",
+        "statLabel": "Belgi",
+        "statHint": "Tushuntirish",
+        "faqQ": "Savol",
+        "faqA": "Javob"
+      },
+      "addStat": "Raqam qoʻshish",
+      "addFaq": "Savol qoʻshish",
+      "removeItem": "Oʻchirish",
+      "loading": "Kontent yuklanmoqda…"
     }
   }
 }
