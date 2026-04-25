@@ -1,0 +1,263 @@
+{
+  "header": {
+    "brand": "mattcha",
+    "login": "Kirish",
+    "profile": "Profil",
+    "discover": "Lenta",
+    "matches": "Suhbatlar",
+    "admin": "Admin"
+  },
+  "language": {
+    "label": "Til",
+    "ru": "Русский",
+    "en": "English",
+    "uz": "Oʻzbekcha"
+  },
+  "landing": {
+    "kicker": "Tanishuv — choy marosimi kabi",
+    "title": "Uni hayratga solish uchun oʻn besh xabar",
+    "subtitle": "mattcha — yopiq doiradagi tanishuv klubi. Minimalizm, vazminlik va bitta qoida: uni uchrashuvga taklif qilish uchun sizda aniq 15 ta xabar bor.",
+    "ctaPrimary": "Profil yaratish",
+    "ctaSecondary": "Batafsil",
+    "stats": {
+      "title": "Ortiqchasiz",
+      "kicker": "Raqamlar",
+      "items": [
+        { "value": "15", "label": "tanishuv uchun xabar", "hint": "Cheksiz messenjer emas" },
+        { "value": "1", "label": "uchrashuv tugmasi", "hint": "Faqat u qaror qiladi" },
+        { "value": "0", "label": "boʻsh suhbat", "hint": "Har bir soʻz — tikilish" }
+      ]
+    },
+    "stepsTitle": "Qanday ishlaydi",
+    "stepsKicker": "Marosim",
+    "feature1Title": "Anketa — tashrif qogʻozi",
+    "feature1Body": "Ism, maqsadlar, surat va xaritadagi nuqta. Cheksiz savollar yoʻq. Jins bir marta tanlanadi — abadiy.",
+    "feature2Title": "Oʻn besh xabar",
+    "feature2Body": "Yigit aniq 15 xabar oladi. Qiz limitni oshirishi mumkin yoki shunchaki “Roziman” tugmasini bosadi.",
+    "feature3Title": "Oramizdagi joy",
+    "feature3Body": "Roziligidan keyin oraliq nuqta hisoblanadi va hamkor kafe taklif etiladi. Promokod bilan — chegirma.",
+    "manifesto": {
+      "kicker": "Manifest",
+      "title": "Svaylar emas. Soʻzlar.",
+      "body": "Biz match ≠ understood boʻlgan ilovalardan charchadik. Mattcha eski qoidani qaytaradi: taassurot qoldirish uchun bitta imkoniyat, uchrashish uchun bitta imkoniyat. Xabarlar limiti — bag emas, bu fitna: yozishdan oldin oʻylashga majbur qiladi.",
+      "signature": "— mattcha jamoasi"
+    },
+    "faq": {
+      "kicker": "FAQ",
+      "title": "Tez-tez beriladigan savollar",
+      "items": [
+        {
+          "q": "15 ta xabar yetmasa-chi?",
+          "a": "Qiz limitni +15, +30, oʻzi koʻrsatgan son yoki cheksiz qila oladi. Faqat u qaror qiladi."
+        },
+        {
+          "q": "Agar u rozi boʻlsa?",
+          "a": "Oraliqdagi hamkor joylar roʻyxati va promokodlar ochiladi. Qolgani — oflayn."
+        },
+        {
+          "q": "Limitni oldindan olib tashlash mumkinmi?",
+          "a": "Yoʻq. Bu format qismi. Limitni faqat qiz oshira oladi, suhbat boshlangach."
+        },
+        {
+          "q": "Profilimni kim koʻradi?",
+          "a": "Faqat qarama-qarshi jins. Reklama lentasi va sponsor kartochkalari yoʻq."
+        }
+      ]
+    },
+    "finalCta": {
+      "kicker": "Tayyormisiz?",
+      "title": "Oʻylab yozish vaqti keldi.",
+      "subtitle": "Roʻyxatdan oʻtish — bir daqiqa. Birinchi xabar — sizdan.",
+      "button": "Profil yaratish"
+    },
+    "footer": {
+      "tagline": "Tanishuv — choy marosimi kabi",
+      "for": "Kim uchun",
+      "users": "foydalanuvchilar",
+      "venues": "hamkor joylar",
+      "copyright": "© {year} mattcha"
+    }
+  },
+  "auth": {
+    "register": {
+      "title": "Profil yaratish",
+      "subtitle": "E-pochta yoki telefon orqali roʻyxatdan oʻting. Bir qadam.",
+      "useEmail": "E-pochta",
+      "usePhone": "Telefon",
+      "emailPlaceholder": "name@example.com",
+      "phonePlaceholder": "+998901234567",
+      "password": "Parol",
+      "passwordHint": "Kamida 8 ta belgi",
+      "passwordConfirm": "Parolni takrorlang",
+      "submit": "Davom etish",
+      "haveAccount": "Akkauntingiz bormi?",
+      "loginLink": "Kirish"
+    },
+    "login": {
+      "title": "Xush kelibsiz",
+      "subtitle": "E-pochta yoki telefon orqali kiring.",
+      "identifier": "E-pochta yoki telefon",
+      "password": "Parol",
+      "submit": "Kirish",
+      "noAccount": "Akkaunt yoʻqmi?",
+      "registerLink": "Yaratish"
+    },
+    "errors": {
+      "passwordMismatch": "Parollar mos kelmaydi",
+      "passwordTooShort": "Parol kamida 8 ta belgidan iborat boʻlsin",
+      "invalidPhone": "Telefon +998… formatida boʻlsin",
+      "generic": "Nimadir xato ketdi",
+      "invalidCredentials": "Notoʻgʻri e-pochta/telefon yoki parol",
+      "alreadyExists": "Bu kontakt bilan akkaunt allaqachon mavjud"
+    }
+  },
+  "profile": {
+    "createTitle": "Anketa",
+    "createSubtitle": "Buni boshqalar koʻradi. Oʻylab toʻldiring — bitta imkoniyat bor.",
+    "editTitle": "Profil",
+    "editSubtitle": "Jinsdan boshqa barcha narsani oʻzgartirish mumkin.",
+    "fullName": "Ism",
+    "gender": "Jins",
+    "male": "Erkak",
+    "female": "Ayol",
+    "genderLockedHint": "Jins faqat bir marta tanlanadi va oʻzgarmaydi.",
+    "birthDate": "Tugʻilgan sana",
+    "occupation": "Ish yoki oʻqish",
+    "occupationPlaceholder": "Qayerda ishlaysiz yoki oʻqiysiz",
+    "lifeGoals": "Hayotiy maqsadlar",
+    "lifeGoalsPlaceholder": "Siz uchun nima muhim, nimaga intilasiz",
+    "address": "Manzil",
+    "addressPlaceholder": "Shahar, tuman",
+    "useMyLocation": "Joylashuvimni qoʻyish",
+    "lat": "Kenglik",
+    "lng": "Uzunlik",
+    "save": "Saqlash",
+    "create": "Profil yaratish",
+    "saving": "Saqlanmoqda…",
+    "ageError": "Minimal yosh — 18",
+    "photos": "Suratlar",
+    "photosHint": "Birinchi surat — asosiy. JPG, PNG, WebP, 8 MB gacha.",
+    "uploadPhoto": "Surat yuklash",
+    "uploading": "Yuklanmoqda…",
+    "makePrimary": "Asosiy qilish",
+    "primary": "Asosiy",
+    "deletePhoto": "Oʻchirish",
+    "noProfile": "Sizda hali anketa yoʻq",
+    "logout": "Chiqish"
+  },
+  "common": {
+    "back": "Orqaga",
+    "loading": "Yuklanmoqda…"
+  },
+  "discover": {
+    "title": "Lenta",
+    "subtitle": "Uni hayratga solish uchun aniq oʻn besh xabar. Oʻylab tanlang.",
+    "empty": "Hozircha hech kim yoʻq. Keyinroq qarang.",
+    "noProfile": "Avval anketangizni toʻldiring.",
+    "createProfile": "Anketaga",
+    "openChat": "Yozish",
+    "kmAway": "{km} km",
+    "loadMore": "Yana koʻrsatish"
+  },
+  "chat": {
+    "back": "Suhbatlarga",
+    "placeholder": "Bir nima yozing…",
+    "send": "Yuborish",
+    "empty": "Hali xabar yoʻq. Uning eʼtiborini jalb qiling.",
+    "cantInitiate": "U sizga hali yozmadi. Birinchi xabarini kuting.",
+    "expiredBanner": "Suhbat yopildi — xabar limiti tugadi.",
+    "matchedBanner": "Match! Endi uchrashuv joyini tanlash vaqti keldi.",
+    "findVenue": "Joy tanlash",
+    "messagesLeftInitiator": "{used} / {limit}",
+    "messagesLeftRecipient": "Uning hisobi: {used}/{limit}",
+    "unlimited": "Limitsiz",
+    "agreeButton": "Uchrashuvga roziman",
+    "extendLabel": "Qoʻshish",
+    "extend15": "+15 xabar",
+    "extend30": "+30 xabar",
+    "extendUnlimited": "Limitsiz",
+    "extendCustom": "Oʻzim aytaman",
+    "extendCustomTitle": "Qancha qoʻshamiz?",
+    "extendCustomConfirm": "Qoʻllash",
+    "noQuotaLeft": "Xabar tugadi",
+    "waitingForHer": "Uning navbati",
+    "loadingChat": "Suhbat ochilmoqda…",
+    "matchPair": "{counterpart} · {age}",
+    "errors": {
+      "network": "Serverga ulanib boʻlmadi. Internetni tekshiring.",
+      "userGone": "Bu foydalanuvchi endi mavjud emas.",
+      "selfChat": "Oʻzingizga yoza olmaysiz.",
+      "sameGender": "Faqat qarama-qarshi jinsga yozish mumkin.",
+      "generic": "Nimadir xato ketdi. Qaytadan urinib koʻring."
+    }
+  },
+  "matches": {
+    "title": "Suhbatlar",
+    "subtitle": "Barcha suhbatlar bir joyda.",
+    "empty": "Hozircha boʻsh. Lenta orqali kimgadir yozing.",
+    "statusOpen": "Ochiq",
+    "statusMatched": "Match",
+    "statusExpired": "Yopiq",
+    "noMessagesYet": "Hali xabar yoʻq"
+  },
+  "venues": {
+    "title": "Qayerda uchrashamiz",
+    "subtitle": "Sizning oraliqdagi hamkor joylar.",
+    "midpoint": "Oraliq nuqta",
+    "distanceFromMidpoint": "Oraliqdan {km} km",
+    "openInMaps": "Maps’da ochish",
+    "promo": "Promokod",
+    "noActivePromos": "Aktiv promokodlar yoʻq",
+    "empty": "Mos joylar topilmadi",
+    "locationMissing": "Anketada joylashuv koʻrsatilmagan",
+    "notMatched": "Joylar uchrashuvga rozilikdan keyin ochiladi",
+    "yourCode": "Kassada ayting"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "forbidden": "Faqat administratorlar uchun",
+    "tabs": {
+      "users": "Foydalanuvchilar",
+      "venues": "Joylar"
+    },
+    "users": {
+      "search": "Email, telefon yoki ism boʻyicha qidirish",
+      "empty": "Foydalanuvchi topilmadi",
+      "ban": "Ban",
+      "unban": "Ochish",
+      "delete": "Oʻchirish",
+      "confirmDelete": "Foydalanuvchini butunlay oʻchirasizmi?",
+      "banned": "Banlangan",
+      "active": "Faol",
+      "noProfile": "Anketasiz",
+      "loadMore": "Yana koʻrsatish"
+    },
+    "venues": {
+      "createNew": "Joy qoʻshish",
+      "edit": "Tahrirlash",
+      "delete": "Oʻchirish",
+      "confirmDelete": "Joyni va promokodlarni oʻchirasizmi?",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "isActive": "Faol",
+      "name": "Nomi",
+      "description": "Tavsif",
+      "address": "Manzil",
+      "lat": "Kenglik",
+      "lng": "Uzunlik",
+      "imageUrl": "Rasm URL",
+      "empty": "Joylar yoʻq"
+    },
+    "promos": {
+      "title": "Promokodlar",
+      "add": "Promokod qoʻshish",
+      "code": "Kod",
+      "description": "Tavsif",
+      "discount": "Chegirma",
+      "isActive": "Faol",
+      "save": "Saqlash",
+      "delete": "Oʻchirish",
+      "empty": "Promokodlar yoʻq"
+    }
+  }
+}

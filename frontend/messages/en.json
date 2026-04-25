@@ -1,0 +1,263 @@
+{
+  "header": {
+    "brand": "mattcha",
+    "login": "Sign in",
+    "profile": "Profile",
+    "discover": "Discover",
+    "matches": "Inbox",
+    "admin": "Admin"
+  },
+  "language": {
+    "label": "Language",
+    "ru": "Русский",
+    "en": "English",
+    "uz": "Oʻzbekcha"
+  },
+  "landing": {
+    "kicker": "Dating, as a tea ceremony",
+    "title": "Fifteen messages to impress her",
+    "subtitle": "mattcha is a closed-circle dating club. Minimal, restrained, with one rule: you get exactly 15 messages to invite her on a date.",
+    "ctaPrimary": "Create profile",
+    "ctaSecondary": "Learn more",
+    "stats": {
+      "title": "No filler",
+      "kicker": "Numbers",
+      "items": [
+        { "value": "15", "label": "messages to start", "hint": "Not an infinite messenger" },
+        { "value": "1", "label": "button for the date", "hint": "Only she decides" },
+        { "value": "0", "label": "empty small talk", "hint": "Every word is a bet" }
+      ]
+    },
+    "stepsTitle": "How it works",
+    "stepsKicker": "The ritual",
+    "feature1Title": "A profile, not a feed",
+    "feature1Body": "Name, goals, a photo, a point on the map. No endless questions. Gender is chosen once — for good.",
+    "feature2Title": "Fifteen messages",
+    "feature2Body": "He gets exactly 15 lines to invite her on a date. She can extend the limit — or just say “Agreed”.",
+    "feature3Title": "A place between you",
+    "feature3Body": "Once she agrees, we compute the midpoint and suggest a partner cafe. With our promo code — a discount.",
+    "manifesto": {
+      "kicker": "Manifesto",
+      "title": "Not swipes. Words.",
+      "body": "We’re tired of apps where matched ≠ understood. Mattcha brings back an old rule: one chance to impress, one chance to meet. The message limit isn’t a bug, it’s the feature: it forces you to think before you type. The rest is just decor.",
+      "signature": "— the mattcha team"
+    },
+    "faq": {
+      "kicker": "FAQ",
+      "title": "Frequently asked",
+      "items": [
+        {
+          "q": "What if 15 messages aren’t enough?",
+          "a": "She can extend the limit by +15, +30, a custom number, or make it unlimited. Only she decides."
+        },
+        {
+          "q": "And if she agrees?",
+          "a": "We open a list of partner venues at the midpoint between you, with promo-code discounts. The rest is offline."
+        },
+        {
+          "q": "Can I remove the limit upfront?",
+          "a": "No. It’s part of the format. Only she can extend, and only after a chat starts."
+        },
+        {
+          "q": "Who sees my profile?",
+          "a": "Only the opposite sex. No promo feeds, no sponsored cards."
+        }
+      ]
+    },
+    "finalCta": {
+      "kicker": "Ready?",
+      "title": "Time to write thoughtfully.",
+      "subtitle": "Sign up takes a minute. The first message — on you.",
+      "button": "Create profile"
+    },
+    "footer": {
+      "tagline": "Dating as a tea ceremony",
+      "for": "For",
+      "users": "users",
+      "venues": "partner venues",
+      "copyright": "© {year} mattcha"
+    }
+  },
+  "auth": {
+    "register": {
+      "title": "Create profile",
+      "subtitle": "Sign up with email or phone. One step.",
+      "useEmail": "E-mail",
+      "usePhone": "Phone",
+      "emailPlaceholder": "name@example.com",
+      "phonePlaceholder": "+998901234567",
+      "password": "Password",
+      "passwordHint": "At least 8 characters",
+      "passwordConfirm": "Confirm password",
+      "submit": "Continue",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in with email or phone.",
+      "identifier": "E-mail or phone",
+      "password": "Password",
+      "submit": "Sign in",
+      "noAccount": "No account?",
+      "registerLink": "Create one"
+    },
+    "errors": {
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 8 characters",
+      "invalidPhone": "Phone must be in +998… format",
+      "generic": "Something went wrong",
+      "invalidCredentials": "Invalid email/phone or password",
+      "alreadyExists": "An account with this contact already exists"
+    }
+  },
+  "profile": {
+    "createTitle": "Profile",
+    "createSubtitle": "This is what others will see. Fill it thoughtfully — everyone gets one shot.",
+    "editTitle": "Profile",
+    "editSubtitle": "You can edit everything except gender.",
+    "fullName": "Name",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "genderLockedHint": "Gender is chosen once and cannot be changed.",
+    "birthDate": "Date of birth",
+    "occupation": "Work or studies",
+    "occupationPlaceholder": "Where you work or study",
+    "lifeGoals": "Life goals",
+    "lifeGoalsPlaceholder": "What matters to you, what you’re working toward",
+    "address": "Address",
+    "addressPlaceholder": "City, district",
+    "useMyLocation": "Use my location",
+    "lat": "Latitude",
+    "lng": "Longitude",
+    "save": "Save",
+    "create": "Create profile",
+    "saving": "Saving…",
+    "ageError": "Minimum age is 18",
+    "photos": "Photos",
+    "photosHint": "The first photo is the main one. JPG, PNG, WebP up to 8 MB.",
+    "uploadPhoto": "Upload photo",
+    "uploading": "Uploading…",
+    "makePrimary": "Make primary",
+    "primary": "Primary",
+    "deletePhoto": "Delete",
+    "noProfile": "You don’t have a profile yet",
+    "logout": "Sign out"
+  },
+  "common": {
+    "back": "Back",
+    "loading": "Loading…"
+  },
+  "discover": {
+    "title": "Feed",
+    "subtitle": "Exactly fifteen messages to impress her. Choose thoughtfully.",
+    "empty": "No one here yet. Check back soon.",
+    "noProfile": "Fill in your profile first.",
+    "createProfile": "Go to profile",
+    "openChat": "Write",
+    "kmAway": "{km} km",
+    "loadMore": "Show more"
+  },
+  "chat": {
+    "back": "Back to inbox",
+    "placeholder": "Write something…",
+    "send": "Send",
+    "empty": "No messages yet. Say something that hooks her.",
+    "cantInitiate": "He hasn’t written you yet. Wait for his first message.",
+    "expiredBanner": "Conversation closed — message limit reached.",
+    "matchedBanner": "You matched! Time to pick a place to meet.",
+    "findVenue": "Pick a venue",
+    "messagesLeftInitiator": "{used} of {limit}",
+    "messagesLeftRecipient": "His count: {used}/{limit}",
+    "unlimited": "Unlimited",
+    "agreeButton": "Agree to meet",
+    "extendLabel": "Extend",
+    "extend15": "+15 messages",
+    "extend30": "+30 messages",
+    "extendUnlimited": "No limit",
+    "extendCustom": "Custom",
+    "extendCustomTitle": "Add how many?",
+    "extendCustomConfirm": "Apply",
+    "noQuotaLeft": "Out of messages",
+    "waitingForHer": "Her move",
+    "loadingChat": "Opening conversation…",
+    "matchPair": "{counterpart} · {age}",
+    "errors": {
+      "network": "Can’t reach the server. Check your connection.",
+      "userGone": "This user is no longer available.",
+      "selfChat": "You can’t message yourself.",
+      "sameGender": "You can only message the opposite gender.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "matches": {
+    "title": "Inbox",
+    "subtitle": "All your conversations in one place.",
+    "empty": "Empty so far. Browse the feed and write to someone.",
+    "statusOpen": "Open",
+    "statusMatched": "Matched",
+    "statusExpired": "Closed",
+    "noMessagesYet": "No messages yet"
+  },
+  "venues": {
+    "title": "Where to meet",
+    "subtitle": "Partner spots near the point between you.",
+    "midpoint": "Point between you",
+    "distanceFromMidpoint": "{km} km from midpoint",
+    "openInMaps": "Open in Maps",
+    "promo": "Promo",
+    "noActivePromos": "No active promos",
+    "empty": "No suitable venues yet",
+    "locationMissing": "One of you has no location set",
+    "notMatched": "Venues unlock after she agrees to meet",
+    "yourCode": "Show at the counter"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "forbidden": "Admins only",
+    "tabs": {
+      "users": "Users",
+      "venues": "Venues"
+    },
+    "users": {
+      "search": "Search by email, phone or name",
+      "empty": "No users found",
+      "ban": "Ban",
+      "unban": "Unban",
+      "delete": "Delete",
+      "confirmDelete": "Permanently delete this user?",
+      "banned": "Banned",
+      "active": "Active",
+      "noProfile": "No profile",
+      "loadMore": "Show more"
+    },
+    "venues": {
+      "createNew": "Add venue",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this venue and all its promos?",
+      "save": "Save",
+      "cancel": "Cancel",
+      "isActive": "Active",
+      "name": "Name",
+      "description": "Description",
+      "address": "Address",
+      "lat": "Latitude",
+      "lng": "Longitude",
+      "imageUrl": "Image URL",
+      "empty": "No venues yet"
+    },
+    "promos": {
+      "title": "Promo codes",
+      "add": "Add promo",
+      "code": "Code",
+      "description": "Description",
+      "discount": "Discount",
+      "isActive": "Active",
+      "save": "Save",
+      "delete": "Delete",
+      "empty": "No promos"
+    }
+  }
+}

@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #070807;
+  color: #e8ece4;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c211c;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #272d27;
+}
+::-webkit-scrollbar-track {
+  background: #070807;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(8px);
+  }
+  .glow-text {
+    text-shadow: 0 0 40px rgba(168, 199, 115, 0.25);
+  }
+  .mask-fade-b {
+    mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+  }
+}
+
+@keyframes mattcha-rise {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), -110vh, 0) scale(1.05);
+    opacity: 0;
+  }
+}
+
+@keyframes mattcha-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes mattcha-aurora {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(2%, -2%, 0) rotate(8deg);
+  }
+}
+
+@keyframes mattcha-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.aurora {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(40% 30% at 20% 20%, rgba(168, 199, 115, 0.15), transparent 70%),
+    radial-gradient(35% 25% at 80% 30%, rgba(120, 156, 61, 0.12), transparent 70%),
+    radial-gradient(50% 40% at 50% 90%, rgba(195, 215, 155, 0.1), transparent 70%);
+  filter: blur(20px);
+  animation: mattcha-aurora 24s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.fade-up {
+  animation: mattcha-fade-up 700ms ease-out both;
+}
