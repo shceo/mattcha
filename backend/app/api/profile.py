@@ -19,6 +19,7 @@ from app.schemas.profile import (
     ProfileUpdate,
     PublicProfileOut,
 )
+from app.services.timeutil import utc_aware
 from app.services.uploads import save_user_photo, url_for_path
 
 router = APIRouter(prefix="/profile", tags=["profile"])
@@ -56,7 +57,7 @@ def _profile_out(p: Profile, photos: list[PhotoOut], user: User) -> ProfileOut:
         lat=p.lat,
         lng=p.lng,
         show_online=p.show_online,
-        last_seen_at=user.last_seen_at,
+        last_seen_at=utc_aware(user.last_seen_at),
         photos=photos,
     )
 
@@ -245,6 +246,6 @@ async def get_public_profile(
         occupation=profile.occupation,
         life_goals=profile.life_goals,
         address=profile.address,
-        last_seen_at=user.last_seen_at if profile.show_online else None,
+        last_seen_at=utc_aware(user.last_seen_at) if profile.show_online else None,
         photos=photos,
     )

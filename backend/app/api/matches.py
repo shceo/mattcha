@@ -34,6 +34,7 @@ from app.schemas.venue import (
     VenueWithPromos,
 )
 from app.services.geo import haversine_km, midpoint
+from app.services.timeutil import utc_aware
 from app.services.uploads import url_for_path
 
 router = APIRouter(prefix="/matches", tags=["matches"])
@@ -74,7 +75,7 @@ async def _load_counterpart(db: AsyncSession, user_id: int) -> CounterpartCard:
         age=_age(profile.birth_date),
         primary_photo_url=url_for_path(photo_path) if photo_path else None,
         address=profile.address,
-        last_seen_at=last_seen if profile.show_online else None,
+        last_seen_at=utc_aware(last_seen) if profile.show_online else None,
     )
 
 
@@ -143,14 +144,14 @@ def _to_out(
         quota_limit=m.quota_limit,
         quota_used=m.quota_used,
         quota_remaining=_quota_remaining(m),
-        matched_at=m.matched_at,
-        created_at=m.created_at,
+        matched_at=utc_aware(m.matched_at),
+        created_at=utc_aware(m.created_at),
         am_initiator=am_init,
         counterpart=counterpart,
         unread_count=unread_count,
         counterpart_last_read_id=other_read,
         picked_venue=picked_venue,
-        meeting_at=m.meeting_at,
+        meeting_at=utc_aware(m.meeting_at),
     )
 
 
@@ -275,15 +276,15 @@ async def my_inbox(
                 status=m.status,
                 quota_limit=m.quota_limit,
                 quota_used=m.quota_used,
-                matched_at=m.matched_at,
-                last_message_at=last.created_at if last else None,
+                matched_at=utc_aware(m.matched_at),
+                last_message_at=utc_aware(last.created_at) if last else None,
                 last_message_preview=(last.body[:120] if last else None),
                 am_initiator=am_init,
                 counterpart=counterpart,
                 unread_count=unread,
                 counterpart_last_read_id=other_read,
                 picked_venue=picked,
-                meeting_at=m.meeting_at,
+                meeting_at=utc_aware(m.meeting_at),
             )
         )
     return items
@@ -335,7 +336,7 @@ async def list_messages(
                 id=r.id,
                 sender_id=r.sender_id,
                 body=r.body,
-                created_at=r.created_at,
+                created_at=utc_aware(r.created_at),
                 kind=r.kind,
                 meta=r.meta,
             )
@@ -387,7 +388,7 @@ async def send_message(
         id=msg.id,
         sender_id=msg.sender_id,
         body=msg.body,
-        created_at=msg.created_at,
+        created_at=utc_aware(msg.created_at),
         kind=msg.kind,
         meta=msg.meta,
     )
