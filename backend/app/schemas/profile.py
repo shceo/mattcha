@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
 from pydantic import BaseModel, Field
 
@@ -28,6 +28,7 @@ class ProfileUpdate(BaseModel):
     address: str | None = Field(default=None, max_length=255)
     lat: float | None = Field(default=None, ge=-90, le=90)
     lng: float | None = Field(default=None, ge=-180, le=180)
+    show_online: bool | None = None
 
 
 class PhotoOut(BaseModel):
@@ -50,6 +51,22 @@ class ProfileOut(BaseModel):
     address: str | None
     lat: float | None
     lng: float | None
+    show_online: bool
+    last_seen_at: datetime | None
     photos: list[PhotoOut] = []
 
     model_config = {"from_attributes": True}
+
+
+class PublicProfileOut(BaseModel):
+    """Profile shape exposed when one user views another. No coords, no birth_date."""
+
+    user_id: int
+    full_name: str
+    gender: Gender
+    age: int
+    occupation: str | None
+    life_goals: str | None
+    address: str | None
+    last_seen_at: datetime | None
+    photos: list[PhotoOut] = []

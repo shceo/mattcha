@@ -143,11 +143,26 @@
     "primary": "Primary",
     "deletePhoto": "Delete",
     "noProfile": "You don’t have a profile yet",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "onlineStatusTitle": "Online status",
+    "showOnlineLabel": "Show others when I’m online",
+    "showOnlineHint": "Turn off and nobody sees your status"
   },
   "common": {
     "back": "Back",
     "loading": "Loading…"
+  },
+  "nav": {
+    "home": "Feed",
+    "chats": "Chats",
+    "profile": "Profile"
+  },
+  "presence": {
+    "online": "online",
+    "recently": "last seen recently",
+    "lastSeenAt": "last seen at {time}",
+    "lastSeenOnDate": "last seen {date} at {time}",
+    "hidden": "hidden"
   },
   "discover": {
     "title": "Feed",
@@ -189,7 +204,14 @@
       "selfChat": "You can’t message yourself.",
       "sameGender": "You can only message the opposite gender.",
       "generic": "Something went wrong. Try again."
-    }
+    },
+    "status": {
+      "sending": "Sending",
+      "sent": "Delivered",
+      "read": "Read",
+      "failed": "Not sent"
+    },
+    "openProfile": "Open profile"
   },
   "matches": {
     "title": "Inbox",

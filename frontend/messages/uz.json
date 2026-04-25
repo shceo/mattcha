@@ -143,11 +143,26 @@
     "primary": "Asosiy",
     "deletePhoto": "Oʻchirish",
     "noProfile": "Sizda hali anketa yoʻq",
-    "logout": "Chiqish"
+    "logout": "Chiqish",
+    "onlineStatusTitle": "Onlayn holati",
+    "showOnlineLabel": "Onlaynligimni boshqalarga koʻrsatish",
+    "showOnlineHint": "Oʻchirsangiz hech kim sizning holatingizni koʻrmaydi"
   },
   "common": {
     "back": "Orqaga",
     "loading": "Yuklanmoqda…"
+  },
+  "nav": {
+    "home": "Lenta",
+    "chats": "Suhbatlar",
+    "profile": "Profil"
+  },
+  "presence": {
+    "online": "onlayn",
+    "recently": "yaqinda kirgan",
+    "lastSeenAt": "{time}da kirgan",
+    "lastSeenOnDate": "{date} {time}da kirgan",
+    "hidden": "yashirilgan"
   },
   "discover": {
     "title": "Lenta",
@@ -189,7 +204,14 @@
       "selfChat": "Oʻzingizga yoza olmaysiz.",
       "sameGender": "Faqat qarama-qarshi jinsga yozish mumkin.",
       "generic": "Nimadir xato ketdi. Qaytadan urinib koʻring."
-    }
+    },
+    "status": {
+      "sending": "Yuborilmoqda",
+      "sent": "Yetkazildi",
+      "read": "Oʻqildi",
+      "failed": "Yuborilmadi"
+    },
+    "openProfile": "Profilni ochish"
   },
   "matches": {
     "title": "Suhbatlar",

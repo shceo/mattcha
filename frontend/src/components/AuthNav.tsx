@@ -4,8 +4,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Link } from "@/i18n/routing";
-import { api } from "@/lib/api";
 import { hasToken, type Me } from "@/lib/auth";
+import { api } from "@/lib/api";
 
 export function AuthNav() {
   const t = useTranslations("header");
@@ -35,25 +35,28 @@ export function AuthNav() {
     );
   }
 
+  const isAdmin = me?.role === "admin";
+
   if (authed) {
+    // Mobile: BottomNav handles primary navigation, so we render nothing here on small screens.
     return (
-      <div className="flex items-center gap-3">
+      <div className="hidden items-center gap-3 sm:flex">
         <Link
           href="/discover"
-          className="hidden text-xs font-medium uppercase tracking-wider text-zinc-300 transition hover:text-matcha-200 sm:inline-flex"
+          className="text-xs font-medium uppercase tracking-wider text-zinc-300 transition hover:text-matcha-200"
         >
           {t("discover")}
         </Link>
         <Link
           href="/matches"
-          className="hidden text-xs font-medium uppercase tracking-wider text-zinc-300 transition hover:text-matcha-200 sm:inline-flex"
+          className="text-xs font-medium uppercase tracking-wider text-zinc-300 transition hover:text-matcha-200"
         >
           {t("matches")}
         </Link>
-        {me?.role === "admin" && (
+        {isAdmin && (
           <Link
             href="/admin"
-            className="hidden text-xs font-medium uppercase tracking-wider text-matcha-200 transition hover:text-matcha-100 sm:inline-flex"
+            className="text-xs font-medium uppercase tracking-wider text-matcha-200 transition hover:text-matcha-100"
           >
             {t("admin")}
           </Link>
@@ -67,6 +70,7 @@ export function AuthNav() {
       </div>
     );
   }
+
   return (
     <Link
       href="/auth/login"

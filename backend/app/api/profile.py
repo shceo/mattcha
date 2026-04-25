@@ -17,6 +17,7 @@ from app.schemas.profile import (
     ProfileCreate,
     ProfileOut,
     ProfileUpdate,
+    PublicProfileOut,
 )
 from app.services.uploads import save_user_photo, url_for_path
 
@@ -42,7 +43,7 @@ async def _photos_for(db: AsyncSession, user_id: int) -> list[PhotoOut]:
     ]
 
 
-def _profile_out(p: Profile, photos: list[PhotoOut]) -> ProfileOut:
+def _profile_out(p: Profile, photos: list[PhotoOut], user: User) -> ProfileOut:
     return ProfileOut(
         user_id=p.user_id,
         full_name=p.full_name,
@@ -54,6 +55,8 @@ def _profile_out(p: Profile, photos: list[PhotoOut]) -> ProfileOut:
         address=p.address,
         lat=p.lat,
         lng=p.lng,
+        show_online=p.show_online,
+        last_seen_at=user.last_seen_at,
         photos=photos,
     )
 
@@ -69,7 +72,7 @@ async def get_my_profile(
     if not profile:
         return None
     photos = await _photos_for(db, user.id)
-    return _profile_out(profile, photos)
+    return _profile_out(profile, photos, user)
 
 
 @router.post("/me", response_model=ProfileOut, status_code=status.HTTP_201_CREATED)
@@ -103,7 +106,7 @@ async def create_my_profile(
     db.add(profile)
     await db.commit()
     await db.refresh(profile)
-    return _profile_out(profile, [])
+    return _profile_out(profile, [], user)
 
 
 @router.patch("/me", response_model=ProfileOut)
@@ -129,7 +132,7 @@ async def update_my_profile(
     await db.commit()
     await db.refresh(profile)
     photos = await _photos_for(db, user.id)
-    return _profile_out(profile, photos)
+    return _profile_out(profile, photos, user)
 
 
 @router.post("/me/photos", response_model=PhotoOut, status_code=status.HTTP_201_CREATED)
@@ -213,3 +216,35 @@ async def delete_my_photo(
         if next_photo:
             next_photo.is_primary = True
     await db.commit()
+
+
+@router.get("/{user_id}", response_model=PublicProfileOut)
+async def get_public_profile(
+    user_id: int,
+    _viewer: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> PublicProfileOut:
+    row = (
+        await db.execute(
+            select(Profile, User).join(User, User.id == Profile.user_id).where(
+                Profile.user_id == user_id
+            )
+        )
+    ).first()
+    if not row:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "profile not found")
+    profile, user = row
+    if user.is_banned:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "profile not found")
+    photos = await _photos_for(db, user_id)
+    return PublicProfileOut(
+        user_id=profile.user_id,
+        full_name=profile.full_name,
+        gender=profile.gender,
+        age=_age(profile.birth_date),
+        occupation=profile.occupation,
+        life_goals=profile.life_goals,
+        address=profile.address,
+        last_seen_at=user.last_seen_at if profile.show_online else None,
+        photos=photos,
+    )

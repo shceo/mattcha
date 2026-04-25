@@ -143,11 +143,26 @@
     "primary": "Главная",
     "deletePhoto": "Удалить",
     "noProfile": "У тебя ещё нет анкеты",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "onlineStatusTitle": "Статус в сети",
+    "showOnlineLabel": "Показывать другим, когда я в сети",
+    "showOnlineHint": "Если выключить — никто не увидит твой статус"
   },
   "common": {
     "back": "Назад",
     "loading": "Загрузка…"
+  },
+  "nav": {
+    "home": "Лента",
+    "chats": "Чаты",
+    "profile": "Профиль"
+  },
+  "presence": {
+    "online": "в сети",
+    "recently": "был(а) недавно",
+    "lastSeenAt": "был(а) в {time}",
+    "lastSeenOnDate": "был(а) {date} в {time}",
+    "hidden": "скрыто"
   },
   "discover": {
     "title": "Лента",
@@ -189,7 +204,14 @@
       "selfChat": "Самому себе писать не получится.",
       "sameGender": "Можно писать только противоположному полу.",
       "generic": "Что-то пошло не так. Попробуй ещё раз."
-    }
+    },
+    "status": {
+      "sending": "Отправляется",
+      "sent": "Доставлено",
+      "read": "Прочитано",
+      "failed": "Не отправилось"
+    },
+    "openProfile": "Открыть профиль"
   },
   "matches": {
     "title": "Сообщения",

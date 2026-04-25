@@ -3,6 +3,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 
+import { BottomNav } from "@/components/BottomNav";
 import { routing } from "@/i18n/routing";
 
 const inter = Inter({
@@ -38,9 +39,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen bg-ink-950 font-sans text-zinc-100 antialiased">
+      <body className="min-h-screen bg-ink-950 pb-16 font-sans text-zinc-100 antialiased sm:pb-0">
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
+          <BottomNav />
         </NextIntlClientProvider>
       </body>
     </html>

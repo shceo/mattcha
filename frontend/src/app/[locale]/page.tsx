@@ -45,13 +45,13 @@ function Landing() {
           <div className="aurora -z-10" aria-hidden />
           <Particles />
 
-          <div className="mx-auto max-w-6xl px-6 pb-28 pt-24 sm:pt-32 md:pt-40">
+          <div className="mx-auto max-w-6xl px-5 pb-24 pt-20 sm:px-6 sm:pt-32 md:pt-40">
             <div className="mx-auto max-w-3xl text-center fade-up">
-              <span className="inline-flex items-center gap-2 rounded-full border border-matcha-300/20 bg-matcha-300/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-matcha-200 backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full border border-matcha-300/20 bg-matcha-300/5 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-matcha-200 backdrop-blur sm:text-[11px]">
                 <Leaf className="h-3 w-3" aria-hidden />
                 {t("kicker")}
               </span>
-              <h1 className="mt-7 font-display text-[40px] font-light leading-[1.02] tracking-tight text-zinc-50 text-balance glow-text sm:text-6xl md:text-7xl lg:text-[88px]">
+              <h1 className="mt-6 font-display text-[34px] font-light leading-[1.05] tracking-tight text-zinc-50 text-balance glow-text sm:mt-7 sm:text-6xl md:text-7xl lg:text-[88px]">
                 {t("title")}
               </h1>
               <p className="mx-auto mt-7 max-w-xl text-base leading-relaxed text-zinc-400 text-pretty sm:text-lg">

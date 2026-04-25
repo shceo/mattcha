@@ -2,6 +2,8 @@
 
 import {
   ArrowLeft,
+  Check,
+  CheckCheck,
   CheckCircle2,
   Clock,
   Loader2,
@@ -17,6 +19,8 @@ import { Header } from "@/components/Header";
 import { Link, useRouter } from "@/i18n/routing";
 import { ApiError, api, apiBaseUrl } from "@/lib/api";
 import { clearTokens, hasToken } from "@/lib/auth";
+import { presenceFrom } from "@/lib/presence";
+import { bumpUnread } from "@/lib/useUnread";
 
 type Counterpart = {
   user_id: number;
@@ -25,6 +29,7 @@ type Counterpart = {
   age: number;
   primary_photo_url: string | null;
   address: string | null;
+  last_seen_at: string | null;
 };
 
 type Match = {
@@ -39,13 +44,17 @@ type Match = {
   created_at: string;
   am_initiator: boolean;
   counterpart: Counterpart;
+  unread_count: number;
+  counterpart_last_read_id: number;
 };
 
 type ChatMessage = {
-  id: number;
+  id: number; // negative = optimistic placeholder until server returns
   sender_id: number;
   body: string;
   created_at: string;
+  pending?: boolean;
+  failed?: boolean;
 };
 
 export default function ChatPage({
@@ -208,6 +217,17 @@ function ChatRoom({ initialMatch }: { initialMatch: Match }) {
     const id = window.setInterval(() => void refresh(), 3000);
     return () => window.clearInterval(id);
   }, [refresh]);
+
+  // Mark match as read on open & whenever new messages arrive from the other side.
+  useEffect(() => {
+    const lastFromOther = [...messages]
+      .reverse()
+      .find((m) => m.sender_id === match.counterpart.user_id);
+    if (!lastFromOther) return;
+    void api(`/matches/${match.id}/read`, { method: "POST" })
+      .then(() => bumpUnread())
+      .catch(() => {});
+  }, [match.id, match.counterpart.user_id, messages]);
 
   const isInitiator = match.am_initiator;
   const isRecipient = !isInitiator;
@@ -386,9 +406,35 @@ function ChatTopbar({ match }: { match: Match }) {
           </span>
           <span className="text-zinc-500">{match.counterpart.age}</span>
         </div>
+        <PresenceLine lastSeen={match.counterpart.last_seen_at} />
         <QuotaLine match={match} />
       </div>
     </div>
+  );
+}
+
+function PresenceLine({ lastSeen }: { lastSeen: string | null }) {
+  const tp = useTranslations("presence");
+  const locale = useLocale();
+  const state = presenceFrom(lastSeen, locale);
+  if (state.kind === "hidden") return null;
+  let label: string;
+  let dotClass = "bg-zinc-600";
+  if (state.kind === "online") {
+    label = tp("online");
+    dotClass = "bg-matcha-300 shadow-[0_0_8px_rgba(168,199,115,0.8)]";
+  } else if (state.kind === "recently") {
+    label = tp("recently");
+  } else if (state.kind === "lastSeenAt") {
+    label = tp("lastSeenAt", { time: state.time });
+  } else {
+    label = tp("lastSeenOnDate", { date: state.date, time: state.time });
+  }
+  return (
+    <p className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] text-zinc-400">
+      <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} aria-hidden />
+      {label}
+    </p>
   );
 }
 

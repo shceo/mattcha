@@ -28,6 +28,7 @@ type MatchListItem = {
   last_message_preview: string | null;
   am_initiator: boolean;
   counterpart: CounterpartCard;
+  unread_count: number;
 };
 
 export default function MatchesPage() {
@@ -97,7 +98,13 @@ export default function MatchesPage() {
                         <span className="text-zinc-500">{m.counterpart.age}</span>
                         <StatusBadge status={m.status} />
                       </div>
-                      <p className="mt-1 truncate text-sm text-zinc-400">
+                      <p
+                        className={`mt-1 truncate text-sm ${
+                          m.unread_count > 0
+                            ? "font-medium text-zinc-100"
+                            : "text-zinc-400"
+                        }`}
+                      >
                         {m.last_message_preview ?? t("noMessagesYet")}
                       </p>
                     </div>
@@ -110,7 +117,13 @@ export default function MatchesPage() {
                           })}
                         </span>
                       )}
-                      <MessageCircle className="h-4 w-4 text-zinc-600 transition group-hover:text-matcha-300" />
+                      {m.unread_count > 0 ? (
+                        <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-matcha-300 px-1.5 text-[11px] font-semibold text-ink-950 shadow-glow">
+                          {m.unread_count > 99 ? "99+" : m.unread_count}
+                        </span>
+                      ) : (
+                        <MessageCircle className="h-4 w-4 text-zinc-600 transition group-hover:text-matcha-300" />
+                      )}
                     </div>
                   </Link>
                 </li>

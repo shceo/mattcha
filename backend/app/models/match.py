@@ -55,6 +55,8 @@ class Match(Base):
     matched_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    initiator_last_read_id: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    recipient_last_read_id: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
 
 class Message(Base):

@@ -15,6 +15,7 @@ class CounterpartCard(BaseModel):
     age: int
     primary_photo_url: str | None
     address: str | None
+    last_seen_at: datetime | None = None  # null when other side hides presence
 
 
 class MatchOut(BaseModel):
@@ -29,6 +30,8 @@ class MatchOut(BaseModel):
     created_at: datetime
     am_initiator: bool
     counterpart: CounterpartCard
+    unread_count: int = 0
+    counterpart_last_read_id: int = 0
 
 
 class MessageOut(BaseModel):
@@ -69,3 +72,5 @@ class MatchListItem(BaseModel):
     last_message_preview: str | None
     am_initiator: bool
     counterpart: CounterpartCard
+    unread_count: int = 0
+    counterpart_last_read_id: int = 0

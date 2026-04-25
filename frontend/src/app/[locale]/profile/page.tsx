@@ -29,6 +29,8 @@ type Profile = {
   address: string | null;
   lat: number | null;
   lng: number | null;
+  show_online: boolean;
+  last_seen_at: string | null;
   photos: Photo[];
 };
 
@@ -52,6 +54,7 @@ export default function ProfilePage() {
   const [address, setAddress] = useState("");
   const [lat, setLat] = useState<string>("");
   const [lng, setLng] = useState<string>("");
+  const [showOnline, setShowOnline] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -90,6 +93,7 @@ export default function ProfilePage() {
     setAddress(p.address ?? "");
     setLat(p.lat != null ? String(p.lat) : "");
     setLng(p.lng != null ? String(p.lng) : "");
+    setShowOnline(p.show_online);
   }
 
   function ageFrom(dateStr: string): number {
@@ -119,6 +123,7 @@ export default function ProfilePage() {
         address: address || null,
         lat: lat === "" ? null : Number(lat),
         lng: lng === "" ? null : Number(lng),
+        show_online: showOnline,
       };
       if (!profile) {
         const created = await api<Profile>("/profile/me", {
@@ -301,6 +306,35 @@ export default function ProfilePage() {
               <MapPin className="h-3.5 w-3.5" />
               {t("useMyLocation")}
             </button>
+
+            <section className="rounded-2xl border border-white/5 bg-ink-900/40 p-4">
+              <h2 className="text-xs uppercase tracking-wider text-matcha-200">
+                {t("onlineStatusTitle")}
+              </h2>
+              <label className="mt-3 flex cursor-pointer items-center justify-between gap-4">
+                <span className="text-sm text-zinc-200">{t("showOnlineLabel")}</span>
+                <span
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border transition ${
+                    showOnline
+                      ? "border-matcha-300/50 bg-matcha-300"
+                      : "border-white/10 bg-ink-800"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={showOnline}
+                    onChange={(e) => setShowOnline(e.target.checked)}
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                  />
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-ink-950 shadow-glow transition ${
+                      showOnline ? "left-[22px]" : "left-0.5"
+                    }`}
+                  />
+                </span>
+              </label>
+              <p className="mt-2 text-[11px] text-zinc-500">{t("showOnlineHint")}</p>
+            </section>
 
             {error && (
               <p className="rounded-xl border border-red-400/30 bg-red-400/5 px-3 py-2 text-xs text-red-300">

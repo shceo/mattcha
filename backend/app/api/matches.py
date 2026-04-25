@@ -4,7 +4,7 @@ from datetime import date, datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import and_, desc, or_, select
+from sqlalchemy import and_, desc, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,7 +51,8 @@ def _quota_remaining(m: Match) -> int | None:
 async def _load_counterpart(db: AsyncSession, user_id: int) -> CounterpartCard:
     row = (
         await db.execute(
-            select(Profile, Photo.path)
+            select(Profile, Photo.path, User.last_seen_at)
+            .join(User, User.id == Profile.user_id)
             .outerjoin(
                 Photo,
                 and_(Photo.user_id == Profile.user_id, Photo.is_primary.is_(True)),
@@ -61,7 +62,7 @@ async def _load_counterpart(db: AsyncSession, user_id: int) -> CounterpartCard:
     ).first()
     if not row:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "user has no profile")
-    profile, photo_path = row
+    profile, photo_path, last_seen = row
     return CounterpartCard(
         user_id=profile.user_id,
         full_name=profile.full_name,
@@ -69,7 +70,28 @@ async def _load_counterpart(db: AsyncSession, user_id: int) -> CounterpartCard:
         age=_age(profile.birth_date),
         primary_photo_url=url_for_path(photo_path) if photo_path else None,
         address=profile.address,
+        last_seen_at=last_seen if profile.show_online else None,
     )
+
+
+async def _unread_for(db: AsyncSession, m: Match, user_id: int) -> int:
+    """Count messages in `m` from the *other* side that are newer than my read cursor."""
+    if user_id == m.initiator_id:
+        cursor = m.initiator_last_read_id
+        other_id = m.recipient_id
+    else:
+        cursor = m.recipient_last_read_id
+        other_id = m.initiator_id
+    row = (
+        await db.execute(
+            select(func.count(Message.id)).where(
+                Message.match_id == m.id,
+                Message.id > cursor,
+                Message.sender_id == other_id,
+            )
+        )
+    ).scalar_one()
+    return int(row or 0)
 
 
 def _ensure_participant(m: Match, user_id: int) -> str:
@@ -80,7 +102,14 @@ def _ensure_participant(m: Match, user_id: int) -> str:
     raise HTTPException(status.HTTP_403_FORBIDDEN, "not a participant")
 
 
-def _to_out(m: Match, user_id: int, counterpart: CounterpartCard) -> MatchOut:
+def _to_out(
+    m: Match,
+    user_id: int,
+    counterpart: CounterpartCard,
+    unread_count: int = 0,
+) -> MatchOut:
+    am_init = user_id == m.initiator_id
+    other_read = m.recipient_last_read_id if am_init else m.initiator_last_read_id
     return MatchOut(
         id=m.id,
         initiator_id=m.initiator_id,
@@ -91,8 +120,10 @@ def _to_out(m: Match, user_id: int, counterpart: CounterpartCard) -> MatchOut:
         quota_remaining=_quota_remaining(m),
         matched_at=m.matched_at,
         created_at=m.created_at,
-        am_initiator=user_id == m.initiator_id,
+        am_initiator=am_init,
         counterpart=counterpart,
+        unread_count=unread_count,
+        counterpart_last_read_id=other_read,
     )
 
 
@@ -177,7 +208,8 @@ async def get_or_create_match(
                 )
 
     counterpart = await _load_counterpart(db, user_id)
-    return _to_out(existing, user.id, counterpart)
+    unread = await _unread_for(db, existing, user.id)
+    return _to_out(existing, user.id, counterpart, unread)
 
 
 @router.get("", response_model=list[MatchListItem])
@@ -205,6 +237,9 @@ async def my_inbox(
                 .limit(1)
             )
         ).scalar_one_or_none()
+        unread = await _unread_for(db, m, user.id)
+        am_init = user.id == m.initiator_id
+        other_read = m.recipient_last_read_id if am_init else m.initiator_last_read_id
         items.append(
             MatchListItem(
                 id=m.id,
@@ -214,8 +249,10 @@ async def my_inbox(
                 matched_at=m.matched_at,
                 last_message_at=last.created_at if last else None,
                 last_message_preview=(last.body[:120] if last else None),
-                am_initiator=user.id == m.initiator_id,
+                am_initiator=am_init,
                 counterpart=counterpart,
+                unread_count=unread,
+                counterpart_last_read_id=other_read,
             )
         )
     return items
@@ -235,7 +272,8 @@ async def get_match(
     _ensure_participant(m, user.id)
     other_id = m.recipient_id if user.id == m.initiator_id else m.initiator_id
     counterpart = await _load_counterpart(db, other_id)
-    return _to_out(m, user.id, counterpart)
+    unread = await _unread_for(db, m, user.id)
+    return _to_out(m, user.id, counterpart, unread)
 
 
 @router.get("/{match_id}/messages", response_model=MessagesPage)
@@ -309,6 +347,42 @@ async def send_message(
     return MessageOut(id=msg.id, sender_id=msg.sender_id, body=msg.body, created_at=msg.created_at)
 
 
+@router.post("/{match_id}/read", response_model=MatchOut)
+async def mark_read(
+    match_id: int,
+    user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> MatchOut:
+    m = (
+        await db.execute(select(Match).where(Match.id == match_id))
+    ).scalar_one_or_none()
+    if not m:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "match not found")
+    role = _ensure_participant(m, user.id)
+
+    latest_id = (
+        await db.execute(
+            select(func.coalesce(func.max(Message.id), 0)).where(Message.match_id == m.id)
+        )
+    ).scalar_one()
+    latest_id = int(latest_id or 0)
+
+    if role == "initiator":
+        if latest_id > m.initiator_last_read_id:
+            m.initiator_last_read_id = latest_id
+            await db.commit()
+            await db.refresh(m)
+    else:
+        if latest_id > m.recipient_last_read_id:
+            m.recipient_last_read_id = latest_id
+            await db.commit()
+            await db.refresh(m)
+
+    other_id = m.recipient_id if role == "initiator" else m.initiator_id
+    counterpart = await _load_counterpart(db, other_id)
+    return _to_out(m, user.id, counterpart, 0)
+
+
 @router.post("/{match_id}/agree", response_model=MatchOut)
 async def agree_to_meet(
     match_id: int,
@@ -332,7 +406,8 @@ async def agree_to_meet(
     await db.commit()
     await db.refresh(m)
     counterpart = await _load_counterpart(db, m.initiator_id)
-    return _to_out(m, user.id, counterpart)
+    unread = await _unread_for(db, m, user.id)
+    return _to_out(m, user.id, counterpart, unread)
 
 
 @router.post("/{match_id}/extend", response_model=MatchOut)
@@ -365,7 +440,8 @@ async def extend_quota(
     await db.commit()
     await db.refresh(m)
     counterpart = await _load_counterpart(db, m.initiator_id)
-    return _to_out(m, user.id, counterpart)
+    unread = await _unread_for(db, m, user.id)
+    return _to_out(m, user.id, counterpart, unread)
 
 
 @router.get("/{match_id}/venues", response_model=MatchVenueRecommendation)
